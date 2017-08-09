@@ -385,6 +385,7 @@ nautilus_mime_get_default_application_for_file (NautilusFile *file)
 
     if (!nautilus_mime_actions_check_if_required_attributes_ready (file))
     {
+        G_BREAKPOINT();
         return NULL;
     }
 

@@ -1237,53 +1237,15 @@ nautilus_files_view_activate_files (NautilusFilesView       *view,
     g_list_free (files_to_activate);
 }
 
-static void
+void
 nautilus_files_view_activate_file (NautilusFilesView       *view,
                                    NautilusFile            *file,
                                    NautilusWindowOpenFlags  flags)
 {
-    NautilusFilesViewPrivate *priv;
-    char *path;
+    g_autoptr(GList) files;
 
-    priv = nautilus_files_view_get_instance_private (view);
-
-    if (nautilus_mime_file_extracts (file))
-    {
-        GList *files = NULL;
-
-        files = g_list_prepend (files, file);
-
-        if (nautilus_files_view_supports_extract_here (view))
-        {
-            g_autoptr (GFile) location = NULL;
-            g_autoptr (GFile) parent = NULL;
-
-            location = nautilus_file_get_location (file);
-            /* Get a parent from a random file. We assume all files has a common parent.
-             * But don't assume the parent is the view location, since that's not the
-             * case in list view when expand-folder setting is set
-             */
-            parent = g_file_get_parent (location);
-            extract_files (view, files, parent);
-        }
-        else
-        {
-            extract_files_to_chosen_location (view, files);
-        }
-
-        g_list_free (files);
-
-        return;
-    }
-
-    path = get_view_directory (view);
-    nautilus_mime_activate_file (nautilus_files_view_get_containing_window (view),
-                                 priv->slot,
-                                 file,
-                                 path,
-                                 flags);
-
-    g_free (path);
+    files = g_list_append(NULL, file);
+    nautilus_files_view_activate_files (view, files, flags, FALSE);
 }
 
 static void
